@@ -29,9 +29,12 @@ geolocationApp.prototype = {
     
 	_handleRefresh:function() {
 		var options = {
-			enableHighAccuracy: true
-		},
-		that = this;
+                enableHighAccuracy: true
+            },
+			that = this;
+        
+        that._setResults("Waiting for geolocation information...");
+        
 		navigator.geolocation.getCurrentPosition(function() {
 			that._onSuccess.apply(that, arguments);
 		}, function() {
