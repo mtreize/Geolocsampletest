@@ -28,10 +28,10 @@ geolocationApp.prototype = {
 	},
     
 	_handleRefresh:function() {
-		var options = {
-                enableHighAccuracy: true
+        var options = {
+            	enableHighAccuracy: true
             },
-			that = this;
+            that = this;
         
         that._setResults("Waiting for geolocation information...");
         
