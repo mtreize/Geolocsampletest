@@ -45,7 +45,5 @@
 	"Author": "",
 	"Description": "sample-geolocation",
 	"Framework": "Cordova",
-	"projectVersion": 1,
-	"WP8PublisherID": "{c912cd73-17fd-4993-a9d9-6425cd2c34bc}",
-	"WP8ProductID": "{69841064-cb14-4224-a2e3-064dd285e0b0}"
+	"projectVersion": 1
 }
