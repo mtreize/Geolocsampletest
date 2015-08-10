@@ -38,9 +38,9 @@
 	],
 	"DisplayName": "Geolocation",
 	"WP8SupportedResolutions": [
+		"ID_RESOLUTION_HD720P",
 		"ID_RESOLUTION_WVGA",
-		"ID_RESOLUTION_WXGA",
-		"ID_RESOLUTION_HD720P"
+		"ID_RESOLUTION_WXGA"
 	],
 	"Author": "",
 	"WP8Publisher": "",
@@ -50,5 +50,9 @@
 	"WP8Requirements": [],
 	"Description": "sample-geolocation",
 	"Framework": "Cordova",
-	"projectVersion": 1
+	"projectVersion": 1,
+	"WP8PublisherID": "{b3fcc9a4-6f93-463e-a821-71d7fc2cae19}",
+	"WP8ProductID": "{a82d43a7-6d94-4b3d-b648-6de15fe75d9d}",
+	"WP8PackageIdentityName": "1234Telerik.com.telerik.samplegeolocation",
+	"WP8WindowsPublisherName": "CN=Telerik"
 }
