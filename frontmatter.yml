@@ -1,0 +1,7 @@
+title: Geolocation
+slug: sample-geolocation
+page_title: Geolocation | Apache Cordova Sample | Telerik Platform
+description: This sample shows you how to use the Geolocation Apache Cordova core plugin to access geolocation data about the mobile device. 
+tags: Apache Cordova, core, geolocation, gps, iOS, Android, Windows Phone
+publish: true
+content_filter: true
