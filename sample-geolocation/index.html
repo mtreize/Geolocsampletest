@@ -14,10 +14,14 @@
 </head>
 <body onload="init();">
 	<div id="map" class="map"></div>
+	<input type="number" id="user" min="1" max="10" />
 	<script type="text/javascript">
 		var map, geolocation, view, group = 1, user = 8, positionLayer;
 		var isola = [7.148, 44.186];
 		function init() {
+			$('#user').change(function () {
+				user = this.value;
+			});			
 			var accuracyFeature = new ol.Feature();
 			var positionFeature = new ol.Feature();
 			positionFeature.setStyle(new ol.style.Style({
