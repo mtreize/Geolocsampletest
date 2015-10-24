@@ -1,48 +1,103 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Geolocation Sample</title>
-
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<meta charset="utf-8">
-
-		<link rel="stylesheet" href="styles/main.css" />
-		<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-		<script type="text/javascript" charset="utf-8" src="scripts/main.js"></script>
-	</head>
-	<body>
-		<header class="header">
-            
-            
-            
-             
-            
-            
-            
-			<h1>C'est bon ? oui pour moi (Rayan)</h1>
-		
-        
-        
-        
-        
-        
-        
-        
-        </header>
-		<div class="content">
-            <div class="action-area ch30">
-                <button class="button dh" id="watchButton">Start Geolocation Watch</button>
-			    <button class="button dh" id="refreshButton">Refresh Geolocation</button>
-            </div>
-			<div class="result-area ch70">
-                <div class="results">
-                    <div id="results" class="desc"></div>
-                </div>
-                <div class="separator"></div>
-            </div>
-		</div>
-	</body>
-	<footer class="footer">
-		<div>Cordova API Samples</div>
-	</footer>
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+	<title>WeSki</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="http://openlayers.org/en/v3.10.1/css/ol.css" type="text/css" />
+	<style>
+		.map {
+			height: 100%;
+			width: 100%;
+		}
+	</style>
+</head>
+<body onload="init();">
+	<div id="map" class="map"></div>
+	<script type="text/javascript">
+		var map, geolocation, view, group = 1, user = 8, positionLayer;
+		var isola = [7.148, 44.186];
+		function init() {
+			var accuracyFeature = new ol.Feature();
+			var positionFeature = new ol.Feature();
+			positionFeature.setStyle(new ol.style.Style({
+				image: new ol.style.Circle({radius: 6, fill: new ol.style.Fill({color: 'blue'}), stroke: new ol.style.Stroke({color: 'white', width: 2})})
+			}));
+			view = new ol.View({center: ol.proj.fromLonLat(isola), zoom: 10});
+			map = new ol.Map({
+				target: 'map',
+				view: view,
+				layers: [
+					new ol.layer.Tile({source: new ol.source.OSM()}),
+					new ol.layer.Tile({source: new ol.source.XYZ({url: 'http://www.opensnowmap.org/opensnowmap-overlay/{z}/{x}/{y}.png'})})
+				]
+			});
+			geolocation = new ol.Geolocation({tracking: true});
+			geolocation.on('change:accuracyGeometry', function() {
+				accuracyFeature.setGeometry(geolocation.getAccuracyGeometry().transform('EPSG:4326', 'EPSG:3857'));
+			});
+			geolocation.on('change:position', function() {
+				var coordinates = geolocation.getPosition();
+				positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates).transform('EPSG:4326', 'EPSG:3857') : null);
+				center(coordinates);
+				$.ajax({
+					url: 'https://skisquad-maxcom.c9.io/api/v1/positions',
+					method: 'POST',
+					crossDomain: true,
+					dataType: 'json',
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					data: JSON.stringify({
+						position: {
+							user_id: user,
+							latitude: coordinates[0],
+							longitude: coordinates[1]
+						}
+					})
+				}).done(function (data) {
+					
+				});
+			});
+			positionLayer = new ol.layer.Vector({map: map, source: new ol.source.Vector({features: [accuracyFeature, positionFeature]})});
+			refresh();
+		}
+		function refresh() {
+			$.ajax({
+				method: 'GET',
+				crossDomain: true,
+				dataType: 'json',
+				url: 'https://skisquad-maxcom.c9.io/api/v1/groups/' + group + '/members'
+			}).done(function (data) {
+				$.each(data, function(key, val) {
+					var position = positionLayer.getSource().getFeatureById(val.name);
+					if (!position) {
+						position = new ol.Feature();
+						position.setId(val.name);
+						position.setStyle(new ol.style.Style({
+							image: new ol.style.Circle({radius: 6, fill: new ol.style.Fill({color: 'red'}), stroke: new ol.style.Stroke({color: 'white', width: 2})})
+						}));
+						positionLayer.getSource().addFeature(position);
+					}
+					if (val.last_position.latitude) {
+						position.setGeometry(new ol.geom.Point([val.last_position.latitude, val.last_position.longitude]).transform('EPSG:4326', 'EPSG:3857'));
+					}
+				});
+			}).always(function () {
+				setTimeout(function () {
+					refresh();
+				}, 30000);
+			});
+		}
+		function center(position) {
+			var pan = ol.animation.pan({duration: 2000, source: view.getCenter()});
+			map.beforeRender(pan);
+			view.setCenter(ol.proj.fromLonLat(position));
+			view.setZoom(14);
+		}
+	</script>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+	<script src="http://openlayers.org/en/v3.10.1/build/ol.js" type="text/javascript"></script>
+</body>
 </html>
